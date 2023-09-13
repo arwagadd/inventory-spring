@@ -1,7 +1,8 @@
 package com.example.inventory.service;
 
 import com.example.inventory.dto.ItemUserDto;
-import com.example.inventory.exceptions.ItemOrUserDonotExist;
+import com.example.inventory.exceptions.ItemDoesNotExistException;
+import com.example.inventory.exceptions.UserDoesNotExistException;
 import com.example.inventory.mapper.ItemUserMapper;
 import com.example.inventory.model.Item;
 import com.example.inventory.model.ItemUser;
@@ -9,6 +10,7 @@ import com.example.inventory.model.User;
 import com.example.inventory.repository.ItemRepo;
 import com.example.inventory.repository.ItemUserRepo;
 import com.example.inventory.repository.UserRepo;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +29,34 @@ public class ItemUserServiceImpl implements ItemUserService {
     private ItemRepo itemRepo;
     private ItemUserMapper itemUserMapper;
 
+
     @Override
-    public void giveItemToUser(Integer userId, Integer itemId,ItemUserDto itemUserDto) {
+    @Transactional
+    public ItemUserDto giveItemToUser(ItemUserDto itemUserDto) {
         //if user and item exist, give them to the user.
-        Optional<User> user = userRepo.findById(userId);
-        Optional<Item> item = itemRepo.findById(itemId);
-        if(user.isPresent() && item.isPresent()){
-            itemUserDto.setUserId(userId);
-            itemUserDto.setItemId(itemId);
+        checkIfUserExists(itemUserDto.getUser().getId());
+        checkIfItemExists(itemUserDto.getItem().getId());
+
+        itemUserDto.setItemId(itemUserDto.getItem().getId());
+        itemUserDto.setUserId(itemUserDto.getUser().getId());
+        //ItemUserDto --> Item { id, name }, itemID
+        ItemUser itemUser = itemUserMapper.dtoToEntity(itemUserDto);
+        itemUserRepo.save(itemUser);
+        return itemUserMapper.entityToDto(itemUser);
+        }
+
+    public void checkIfUserExists(Integer id){
+        Optional<User> userExists = userRepo.findById(id);
+        if(!userExists.isPresent()){
+            throw new UserDoesNotExistException("User does not exist.");
+        }
+    }
+    public void checkIfItemExists(Integer id){
+        Optional<Item> itemExists = itemRepo.findById(id);
+        if(!itemExists.isPresent()){
+            //(itemRepo.findByQuantity(id).equals(0)))
+            //or if the quanitity of the item is 0
+            throw new ItemDoesNotExistException("Item does not exist.");
         }
     }
 }

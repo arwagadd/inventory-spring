@@ -10,5 +10,7 @@ import org.mapstruct.Mapping;
 public interface ItemUserMapper {
     ItemUserDto entityToDto(ItemUser itemUser);
 
+    @Mapping(source = "userId",target = "user.id")
+    @Mapping(source = "itemId",target = "item.id")
     ItemUser dtoToEntity(ItemUserDto itemUserDto);
 }

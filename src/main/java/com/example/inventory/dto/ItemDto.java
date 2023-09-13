@@ -20,9 +20,9 @@ public class ItemDto {
     private int price;
     private String serialNumber;
     private AssetDto asset;
-    private int quantity=0;
+    private int quantity;
     private int assetId;
-    private ItemStatus itemStatus = ItemStatus.UNAVAILABLE;
+    private ItemStatus itemStatus;
     private String rating;
     private String description;
 }

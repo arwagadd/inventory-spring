@@ -5,6 +5,7 @@ import com.example.inventory.exceptions.UserAlreadyExistsException;
 import com.example.inventory.mapper.UserMapper;
 import com.example.inventory.model.User;
 import com.example.inventory.repository.UserRepo;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
+    @Transactional
     @Override
     public UserDto addUser(UserDto userDto) {
         findByPhoneNumber(userDto.getPhoneNumber());
@@ -31,11 +33,14 @@ public class UserServiceImpl implements UserService {
         return userMapper.entityToDto(user);
     }
 
+    @Transactional
     @Override
     public List<UserDto> getAllUsers() {
         return userRepo.findAll().stream().map(userMapper::entityToDto).collect(Collectors.toList());
     }
 
+
+    @Transactional
     @Override
     public void deleteById(Integer id) {
         userRepo.deleteById(id);

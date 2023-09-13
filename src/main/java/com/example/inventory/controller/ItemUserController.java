@@ -12,10 +12,9 @@ public class ItemUserController {
     @Autowired
     private ItemUserService itemUserService;
 
-    @PostMapping(path = "/api/{userId}/{itemId}")
-    public void giveItemToUser(@PathVariable ("userId") Integer userId,
-                                      @PathVariable("itemId") Integer itemId,
-                               @RequestBody ItemUserDto itemUserDto){
-         itemUserService.giveItemToUser(userId,itemId,itemUserDto);
+    @PostMapping()
+    public ItemUserDto giveItemToUser(@RequestBody ItemUserDto itemUserDto)
+    {
+         return itemUserService.giveItemToUser(itemUserDto);
     }
 }

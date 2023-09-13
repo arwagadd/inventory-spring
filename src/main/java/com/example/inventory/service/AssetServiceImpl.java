@@ -4,6 +4,7 @@ import com.example.inventory.dto.AssetDto;
 import com.example.inventory.mapper.AssetMapper;
 import com.example.inventory.model.Asset;
 import com.example.inventory.repository.AssetRepo;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ public class AssetServiceImpl implements AssetService{
     private AssetRepo assetRepo;
     private AssetMapper assetMapper;
 
+    @Transactional
     @Override
     public AssetDto addAsset(AssetDto assetDto) {
         Asset asset = assetMapper.dtoToEntity(assetDto);

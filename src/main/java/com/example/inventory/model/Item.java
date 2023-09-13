@@ -44,13 +44,13 @@ public class Item {
 
     @Column(name = "status")
     @Enumerated(value = EnumType.STRING)
-    private ItemStatus itemStatus;
+    private ItemStatus itemStatus  = ItemStatus.UNAVAILABLE;
 
     @Column(name = "average_rating")
     private String rating;
 
     @Column(name = "quantity")
-    private int quantity;
+    private int quantity = 0;
 
     @Column(name = "description")
     private String description;

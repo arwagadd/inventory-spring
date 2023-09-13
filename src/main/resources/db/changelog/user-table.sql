@@ -15,7 +15,7 @@ CREATE TABLE public.user
     id                bigint                 NOT NULL DEFAULT nextval('user_id_sequence'::regclass),
     name              character varying(250),
     phone_number      character varying(250),
-    job_position      character varying(250),
+    job_status        character varying(250),
     PRIMARY KEY (id)
 
 ) TABLESPACE pg_default;

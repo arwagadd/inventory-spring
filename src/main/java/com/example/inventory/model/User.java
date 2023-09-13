@@ -1,5 +1,7 @@
 package com.example.inventory.model;
 
+import com.example.inventory.enums.ItemStatus;
+import com.example.inventory.enums.JobStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,8 +34,9 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "job_position")
-    private String jobPosition;
+    @Column(name = "job_status")
+    @Enumerated(value = EnumType.STRING)
+    private JobStatus jobStatus;
 
     //A user can have many items
     //One item can be related to many

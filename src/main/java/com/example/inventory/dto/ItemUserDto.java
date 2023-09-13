@@ -15,5 +15,4 @@ public class ItemUserDto {
     private int userId;
     private ItemDto item;
     private int itemId;
-
 }

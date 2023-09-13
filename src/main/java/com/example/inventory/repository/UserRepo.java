@@ -10,5 +10,4 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface UserRepo extends JpaRepository<User,Integer> {
     User findByPhoneNumber(String phoneNumber);
     void deleteById(Integer integer);
-    User findById(String id);
 }
