@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -61,10 +62,10 @@ public class ItemUserServiceImpl implements ItemUserService {
         itemUserRepo.deleteByItemIdAndUserId(itemId,userId);
     }
 
-//    @Override
-//    public List<ItemUserDto> getAllItemsOfUser(Long id) {
-//        itemUserRepo.findById(id);
-//    }
+    @Override
+    public List<ItemUserDto> getAllItemsOfUser(Integer userId) {
+        return itemUserRepo.findAllByUserId(userId).stream().map(itemUserMapper::entityToDto).collect(Collectors.toList());
+    }
 
     public UserDto checkIfUserExists(Integer id) {
         Optional<User> userExists = userRepo.findById(id);
