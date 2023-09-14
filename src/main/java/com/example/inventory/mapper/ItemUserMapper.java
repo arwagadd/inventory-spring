@@ -6,11 +6,9 @@ import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR , uses = {UserMapper.class})
 public interface ItemUserMapper {
     ItemUserDto entityToDto(ItemUser itemUser);
 
-    @Mapping(source = "userId",target = "user.id")
-    @Mapping(source = "itemId",target = "item.id")
     ItemUser dtoToEntity(ItemUserDto itemUserDto);
 }

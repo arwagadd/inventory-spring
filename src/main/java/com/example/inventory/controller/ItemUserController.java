@@ -12,9 +12,14 @@ public class ItemUserController {
     @Autowired
     private ItemUserService itemUserService;
 
-    @PostMapping()
+    @PostMapping
     public ItemUserDto giveItemToUser(@RequestBody ItemUserDto itemUserDto)
     {
          return itemUserService.giveItemToUser(itemUserDto);
+    }
+
+    @DeleteMapping(path = "/delete/{itemId}/{userId}")
+    public void removeItemFromUser(@PathVariable("userId") Integer userId,@PathVariable("itemId") Integer itemId){
+             itemUserService.removeItemFromUser(userId,itemId);
     }
 }

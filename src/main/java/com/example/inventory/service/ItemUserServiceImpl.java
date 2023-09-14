@@ -1,9 +1,13 @@
 package com.example.inventory.service;
 
+import com.example.inventory.dto.ItemDto;
 import com.example.inventory.dto.ItemUserDto;
+import com.example.inventory.dto.UserDto;
 import com.example.inventory.exceptions.ItemDoesNotExistException;
 import com.example.inventory.exceptions.UserDoesNotExistException;
+import com.example.inventory.mapper.ItemMapper;
 import com.example.inventory.mapper.ItemUserMapper;
+import com.example.inventory.mapper.UserMapper;
 import com.example.inventory.model.Item;
 import com.example.inventory.model.ItemUser;
 import com.example.inventory.model.User;
@@ -16,6 +20,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Data
@@ -27,36 +32,55 @@ public class ItemUserServiceImpl implements ItemUserService {
     private ItemUserRepo itemUserRepo;
     private UserRepo userRepo;
     private ItemRepo itemRepo;
+    @Autowired
     private ItemUserMapper itemUserMapper;
-
+    private UserMapper userMapper;
+    private ItemMapper itemMapper;
 
     @Override
     @Transactional
     public ItemUserDto giveItemToUser(ItemUserDto itemUserDto) {
         //if user and item exist, give them to the user.
-        checkIfUserExists(itemUserDto.getUser().getId());
-        checkIfItemExists(itemUserDto.getItem().getId());
+        UserDto userDto = checkIfUserExists(itemUserDto.getUser().getId());
+        ItemDto itemDto = checkIfItemExists(itemUserDto.getItem().getId());
 
-        itemUserDto.setItemId(itemUserDto.getItem().getId());
-        itemUserDto.setUserId(itemUserDto.getUser().getId());
+        ItemUserDto itemUser = new ItemUserDto();
+        itemUser.setItem(itemDto);
+        itemUser.setUser(userDto);
         //ItemUserDto --> Item { id, name }, itemID
-        ItemUser itemUser = itemUserMapper.dtoToEntity(itemUserDto);
-        itemUserRepo.save(itemUser);
-        return itemUserMapper.entityToDto(itemUser);
-        }
+        ItemUser user = itemUserMapper.dtoToEntity(itemUser);
+        itemUserRepo.save(user);
+        return itemUser;
+    }
 
-    public void checkIfUserExists(Integer id){
+    @Transactional
+    @Override
+    public void removeItemFromUser(Integer userId, Integer itemId) {
+        checkIfUserExists(userId);
+        checkIfItemExists(itemId);
+        itemUserRepo.deleteByItemIdAndUserId(itemId,userId);
+    }
+
+//    @Override
+//    public List<ItemUserDto> getAllItemsOfUser(Long id) {
+//        itemUserRepo.findById(id);
+//    }
+
+    public UserDto checkIfUserExists(Integer id) {
         Optional<User> userExists = userRepo.findById(id);
-        if(!userExists.isPresent()){
+        if (!userExists.isPresent()) {
             throw new UserDoesNotExistException("User does not exist.");
         }
+        return userMapper.entityToDto(userExists.get());
     }
-    public void checkIfItemExists(Integer id){
+
+    public ItemDto checkIfItemExists(Integer id) {
         Optional<Item> itemExists = itemRepo.findById(id);
-        if(!itemExists.isPresent()){
+        if (!itemExists.isPresent()) {
             //(itemRepo.findByQuantity(id).equals(0)))
             //or if the quanitity of the item is 0
             throw new ItemDoesNotExistException("Item does not exist.");
         }
+        return itemMapper.entityToDto(itemExists.get());
     }
 }

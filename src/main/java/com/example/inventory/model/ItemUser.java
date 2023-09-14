@@ -1,9 +1,14 @@
 package com.example.inventory.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "item_user")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity@Table(name = "item_user")
 public class ItemUser {
 
     @SequenceGenerator(
