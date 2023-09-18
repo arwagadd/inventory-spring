@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset Arwa:20230911_item-user_table
+--changeset Arwa:20230911_item_table
 CREATE SEQUENCE public.item_id_sequence
     INCREMENT 1
     START 1

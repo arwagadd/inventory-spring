@@ -1,6 +1,7 @@
 package com.example.inventory.service;
 
 import com.example.inventory.dto.ItemDto;
+import com.example.inventory.dto.ItemHistoryDto;
 import com.example.inventory.dto.ItemUserDto;
 import com.example.inventory.dto.UserDto;
 import com.example.inventory.exceptions.ItemDoesNotExistException;
@@ -9,9 +10,11 @@ import com.example.inventory.mapper.ItemMapper;
 import com.example.inventory.mapper.ItemUserMapper;
 import com.example.inventory.mapper.UserMapper;
 import com.example.inventory.model.Item;
+import com.example.inventory.model.ItemHistory;
 import com.example.inventory.model.ItemUser;
 import com.example.inventory.model.User;
 import com.example.inventory.repository.ItemRepo;
+import com.example.inventory.repository.ItemUserHistoryRepo;
 import com.example.inventory.repository.ItemUserRepo;
 import com.example.inventory.repository.UserRepo;
 import jakarta.transaction.Transactional;
@@ -20,6 +23,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,10 +37,12 @@ public class ItemUserServiceImpl implements ItemUserService {
     private ItemUserRepo itemUserRepo;
     private UserRepo userRepo;
     private ItemRepo itemRepo;
-    @Autowired
     private ItemUserMapper itemUserMapper;
     private UserMapper userMapper;
     private ItemMapper itemMapper;
+    private ItemUserHistoryRepo itemUserHistoryRepo;
+    private ItemUserHistoryService itemUserHistoryService;
+
 
     @Override
     @Transactional
@@ -44,13 +50,10 @@ public class ItemUserServiceImpl implements ItemUserService {
         //if user and item exist, give them to the user.
         UserDto userDto = checkIfUserExists(itemUserDto.getUser().getId());
         ItemDto itemDto = checkIfItemExists(itemUserDto.getItem().getId());
-
-        ItemUserDto itemUser = new ItemUserDto();
-        itemUser.setItem(itemDto);
-        itemUser.setUser(userDto);
-        //ItemUserDto --> Item { id, name }, itemID
+        ItemUserDto itemUser = ItemUserDto.getInstance(itemDto, userDto);
         ItemUser user = itemUserMapper.dtoToEntity(itemUser);
         itemUserRepo.save(user);
+        itemUserHistoryService.setHistoryForItem(user);
         return itemUser;
     }
 
@@ -59,7 +62,7 @@ public class ItemUserServiceImpl implements ItemUserService {
     public void removeItemFromUser(Integer userId, Integer itemId) {
         checkIfUserExists(userId);
         checkIfItemExists(itemId);
-        itemUserRepo.deleteByItemIdAndUserId(itemId,userId);
+        itemUserRepo.deleteByItemIdAndUserId(itemId, userId);
     }
 
     @Override

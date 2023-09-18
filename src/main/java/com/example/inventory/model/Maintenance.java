@@ -7,32 +7,24 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "item_history")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemHistory {
-
+@Entity
+@Table(name = "maintenance")
+public class Maintenance {
     @SequenceGenerator(
-            name = "item_history_id_sequence",
-            sequenceName = "item_history_id_sequence",
+            name = "maintenance_id_sequence",
+            sequenceName = "maintenance_id_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "item_history_id_sequence"
+            generator = "maintenance_id_sequence"
     )
     @Id
     @Column(name = "id")
     private int id;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @Column(name = "user_id", updatable = false , insertable = false)
-    private int userId;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
@@ -41,13 +33,16 @@ public class ItemHistory {
     @Column(name = "item_id", updatable = false , insertable = false)
     private int itemId;
 
-    @Column(name = "start_time")
+    @Column(name = "action")
+    private String action;
+
+    @Column(name = "price")
+    private int price;
+
+    @Column(name = "start_date")
     private LocalDateTime startTime;
 
-    @Column(name = "end_time")
+    @Column(name = "end_date")
     private LocalDateTime endTime;
-
-    //An item has more than one history
-
 
 }

@@ -11,5 +11,6 @@ import org.mapstruct.Mapping;
 public interface ItemMapper {
    ItemDto entityToDto(Item item);
 
+   @Mapping(target = "itemStatus",ignore = true)
    Item dtoToEntity(ItemDto itemDto);
 }

@@ -15,4 +15,11 @@ public class ItemUserDto {
     private int userId;
     private ItemDto item;
     private int itemId;
+
+  public   static ItemUserDto getInstance(ItemDto itemDto , UserDto userDto){
+        ItemUserDto itemUserDto = new ItemUserDto();
+        itemUserDto.setItem(itemDto);
+        itemUserDto.setUser(userDto);
+        return  itemUserDto;
+   }
 }

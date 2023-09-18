@@ -29,8 +29,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto addItem(ItemDto itemDto) {
         Item item = itemMapper.dtoToEntity(itemDto);
-        Optional<Asset> asset = assetRepo.findById(itemDto.getAsset().getId());
-        itemDto.setAssetId(asset.get().getId());
+//        Optional<Asset> asset = assetRepo.findById(itemDto.getAsset().getId());
+//        itemDto.setAssetId(asset.get().getId());
         itemRepo.save(item);
 
         //ItemDto -> Asset { id , name }, assetID
