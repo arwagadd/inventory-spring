@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 public interface ItemRequestMapper {
     ItemRequestDto entityToDto(ItemRequest itemRequest);
 
-    @Mapping(target = "requestStatus",ignore = true)
+    @Mapping(target = "requestStatus", ignore = true)
+    @Mapping(target = "itemRequestType", ignore = false)
     ItemRequest dtoToEntity(ItemRequestDto itemRequestDto);
 }

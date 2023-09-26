@@ -13,10 +13,7 @@ import com.example.inventory.model.Item;
 import com.example.inventory.model.ItemHistory;
 import com.example.inventory.model.ItemUser;
 import com.example.inventory.model.User;
-import com.example.inventory.repository.ItemRepo;
-import com.example.inventory.repository.ItemUserHistoryRepo;
-import com.example.inventory.repository.ItemUserRepo;
-import com.example.inventory.repository.UserRepo;
+import com.example.inventory.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,20 +30,18 @@ import java.util.stream.Collectors;
 @Service
 public class ItemUserServiceImpl implements ItemUserService {
 
-    @Autowired
-    private ItemUserRepo itemUserRepo;
-    private UserRepo userRepo;
-    private ItemRepo itemRepo;
-    private ItemUserMapper itemUserMapper;
-    private UserMapper userMapper;
-    private ItemMapper itemMapper;
-    private ItemUserHistoryRepo itemUserHistoryRepo;
-    private ItemUserHistoryService itemUserHistoryService;
-
+    private final ItemUserRepo itemUserRepo;
+    private final UserRepo userRepo;
+    private final ItemRepo itemRepo;
+    private final ItemUserMapper itemUserMapper;
+    private final UserMapper userMapper;
+    private final ItemMapper itemMapper;
+    private final ItemUserHistoryService itemUserHistoryService;
+    private final ItemHistoryRepo itemHistoryRepo;
 
     @Override
     @Transactional
-    public ItemUserDto giveItemToUser(ItemUserDto itemUserDto) {
+    public ItemUserDto assignItemToUser(ItemUserDto itemUserDto) {
         //if user and item exist, give them to the user.
         UserDto userDto = checkIfUserExists(itemUserDto.getUser().getId());
         ItemDto itemDto = checkIfItemExists(itemUserDto.getItem().getId());
@@ -59,18 +54,22 @@ public class ItemUserServiceImpl implements ItemUserService {
 
     @Transactional
     @Override
-    public void removeItemFromUser(Integer userId, Integer itemId) {
+    public void deassignItemFromUser(Long userId, Long itemId) {
         checkIfUserExists(userId);
         checkIfItemExists(itemId);
+        List<ItemHistory> itemHistory = itemHistoryRepo.findAllByItemIdAndUserId(itemId,userId);
+        for(int i=0; i<itemHistory.size();i++){
+            itemHistory.get(i).setEndTime(LocalDateTime.now());
+        }
         itemUserRepo.deleteByItemIdAndUserId(itemId, userId);
     }
 
     @Override
-    public List<ItemUserDto> getAllItemsOfUser(Integer userId) {
+    public List<ItemUserDto> getAllItemsOfUser(Long userId) {
         return itemUserRepo.findAllByUserId(userId).stream().map(itemUserMapper::entityToDto).collect(Collectors.toList());
     }
 
-    public UserDto checkIfUserExists(Integer id) {
+    public UserDto checkIfUserExists(Long id) {
         Optional<User> userExists = userRepo.findById(id);
         if (!userExists.isPresent()) {
             throw new UserDoesNotExistException("User does not exist.");
@@ -78,7 +77,7 @@ public class ItemUserServiceImpl implements ItemUserService {
         return userMapper.entityToDto(userExists.get());
     }
 
-    public ItemDto checkIfItemExists(Integer id) {
+    public ItemDto checkIfItemExists(Long id) {
         Optional<Item> itemExists = itemRepo.findById(id);
         if (!itemExists.isPresent()) {
             //(itemRepo.findByQuantity(id).equals(0)))

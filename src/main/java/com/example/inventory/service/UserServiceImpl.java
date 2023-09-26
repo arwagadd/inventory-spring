@@ -1,6 +1,7 @@
 package com.example.inventory.service;
 
 import com.example.inventory.dto.UserDto;
+import com.example.inventory.enums.JobStatus;
 import com.example.inventory.exceptions.UserAlreadyExistsException;
 import com.example.inventory.mapper.UserMapper;
 import com.example.inventory.model.User;
@@ -13,16 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private UserMapper userMapper;
+
+    private final UserRepo userRepo;
+    private final UserMapper userMapper;
 
     @Transactional
     @Override
@@ -42,8 +43,18 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         userRepo.deleteById(id);
+    }
+
+    @Override
+    public List<UserDto> findByName(String name) {
+        return userRepo.findByName(name).stream().map(userMapper::entityToDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserDto> findAllByJobStatus(JobStatus jobStatus) {
+        return userRepo.findByJobStatus(jobStatus).stream().map(userMapper::entityToDto).collect(Collectors.toList());
     }
 
     public void findByPhoneNumber(String phoneNumber) {

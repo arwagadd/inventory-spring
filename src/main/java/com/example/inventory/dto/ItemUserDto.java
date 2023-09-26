@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemUserDto {
-    private int id;
+    private Long id;
     private UserDto user;
-    private int userId;
+    private Long userId;
     private ItemDto item;
-    private int itemId;
+    private Long itemId;
 
   public   static ItemUserDto getInstance(ItemDto itemDto , UserDto userDto){
         ItemUserDto itemUserDto = new ItemUserDto();

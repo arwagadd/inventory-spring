@@ -11,6 +11,6 @@ import org.mapstruct.Mapping;
 public interface ItemMapper {
    ItemDto entityToDto(Item item);
 
-   @Mapping(target = "itemStatus",ignore = true)
+   @Mapping(target = "itemStatus", ignore = true) //bc without ignore = true, null gets mapped to AVAILABLE.
    Item dtoToEntity(ItemDto itemDto);
 }

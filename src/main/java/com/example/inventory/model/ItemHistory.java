@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ItemHistory {
 
+    //controller to view the history of item : Done
+
     @SequenceGenerator(
             name = "item_history_id_sequence",
             sequenceName = "item_history_id_sequence",

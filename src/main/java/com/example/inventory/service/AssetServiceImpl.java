@@ -10,13 +10,15 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Data
 @AllArgsConstructor
 @Service
 public class AssetServiceImpl implements AssetService{
-    @Autowired
-    private AssetRepo assetRepo;
-    private AssetMapper assetMapper;
+    private final AssetRepo assetRepo;
+    private final AssetMapper assetMapper;
 
     @Transactional
     @Override
@@ -24,5 +26,10 @@ public class AssetServiceImpl implements AssetService{
         Asset asset = assetMapper.dtoToEntity(assetDto);
         assetRepo.save(asset);
         return assetMapper.entityToDto(asset);
+    }
+
+    @Override
+    public List<AssetDto> viewAllAssets() {
+        return assetRepo.findAll().stream().map(assetMapper::entityToDto).collect(Collectors.toList());
     }
 }

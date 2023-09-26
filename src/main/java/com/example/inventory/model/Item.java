@@ -24,13 +24,13 @@ public class Item {
     )
     @Id
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @Column(name = "name")
     private String name;
 
     @Column(name = "price")
-    private int price;
+    private Long price;
 
     @Column(name = "serial_number")
     private String serialNumber;
@@ -40,17 +40,17 @@ public class Item {
     private Asset asset;
 
     @Column(name = "asset_id", updatable = false , insertable = false)
-    private int assetId;
+    private Long assetId;
 
     @Column(name = "status")
     @Enumerated(value = EnumType.STRING)
-    private ItemStatus itemStatus  = ItemStatus.UNAVAILABLE;
+    private ItemStatus itemStatus  = ItemStatus.AVAILABLE;
 
     @Column(name = "average_rating")
     private String rating;
 
     @Column(name = "quantity")
-    private int quantity = 0;
+    private Long quantity;
 
     @Column(name = "description")
     private String description;

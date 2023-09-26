@@ -11,11 +11,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MaintenanceDto {
-    private int id;
+    private Long id;
     private Item item;
-    private int itemId;
-    private String action;
-    private int price;
+    private Long itemId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private Long upgradeItemId;
 }

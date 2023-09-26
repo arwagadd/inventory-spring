@@ -1,6 +1,7 @@
 package com.example.inventory.dto;
 
 
+import com.example.inventory.enums.ItemRequestType;
 import com.example.inventory.enums.RequestStatus;
 import com.example.inventory.model.Item;
 import com.example.inventory.model.ItemRequest;
@@ -16,12 +17,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemRequestDto {
-    private int id;
+    private Long id;
     private UserDto user;
-    private int userId;
+    private Long userId;
     private ItemDto item;
-    private int itemId;
-    private int quantity;
+    private Long itemId;
+    private Long itemUpgradeId;
+    private Long quantity;
     private LocalDateTime requestDateTime;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -29,12 +31,16 @@ public class ItemRequestDto {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
+    private ItemRequestType itemRequestType;
+
     public   static ItemRequestDto getInstance(ItemRequestDto requestDto){
         ItemRequestDto itemRequestDto = new ItemRequestDto();
         itemRequestDto.setItem(requestDto.getItem());
         itemRequestDto.setUser(requestDto.getUser());
         itemRequestDto.setQuantity(requestDto.getQuantity());
         itemRequestDto.setRequestDateTime(LocalDateTime.now());
+        itemRequestDto.setItemRequestType(requestDto.getItemRequestType());
+        itemRequestDto.setItemUpgradeId(requestDto.getItemUpgradeId());
         return  itemRequestDto;
     }
 }

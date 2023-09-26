@@ -15,14 +15,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemDto {
-    private int id;
+    private Long id;
     private String name;
-    private int price;
+    private Long price;
     private String serialNumber;
     private AssetDto asset;
-    private int quantity;
-    private int assetId;
+    private Long quantity;
+    private Long assetId;
+
+//    @JsonProperty(access = JsonProperty.Access.READ_ONLY) --> Get
     private ItemStatus itemStatus;
+
     private String rating;
     private String description;
 }

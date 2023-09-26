@@ -1,6 +1,8 @@
 package com.example.inventory.service;
 
 import com.example.inventory.dto.ItemRequestDto;
+import com.example.inventory.enums.ItemRequestType;
+import com.example.inventory.enums.RequestStatus;
 import com.example.inventory.model.ItemRequest;
 
 import java.util.List;
@@ -8,14 +10,13 @@ import java.util.List;
 public interface ItemRequestService {
     ItemRequestDto requestItem(ItemRequestDto itemRequestDto);
 
-    List<ItemRequestDto> viewPendingRequests();
+    List<ItemRequestDto> viewRequests(RequestStatus requestStatus);
 
-    List<ItemRequestDto> viewAcceptedRequests();
+    void acceptRequest(Long itemRequestId);
 
-    List<ItemRequestDto> viewRejectedRequests();
+    void rejectRequest(Long itemRequestId);
 
-    void acceptRequest(Integer itemRequestId);
+    int countByItemRequestType(ItemRequestType type);
 
-    void rejectRequest(Integer itemRequestId);
 
 }

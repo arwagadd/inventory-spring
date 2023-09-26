@@ -10,20 +10,31 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 @Data
 @AllArgsConstructor
 @Service
 public class MaintenanceServiceImpl implements MaintenanceService {
 
-    @Autowired
-    private MaintenanceRepo maintenanceRepo;
-    private MaintenanceMapper maintenanceMapper;
-
-    @Transactional
+    private final MaintenanceRepo maintenanceRepo;
     @Override
-    public MaintenanceDto addMaintenance(MaintenanceDto maintenanceDto) {
-        Maintenance maintenance = maintenanceMapper.dtoToEntity(maintenanceDto);
-        maintenanceRepo.save(maintenance);
-        return maintenanceMapper.entityToDto(maintenance);
+    public void setEndDate(Long id, LocalDateTime endTime) {
+        Optional<Maintenance> maintenanceExists =  maintenanceRepo.findById(id);
+        maintenanceExists.get().setEndTime(endTime);
+        maintenanceRepo.save(maintenanceExists.get());
     }
+
+//    private final MaintenanceRepo maintenanceRepo;
+//    private final MaintenanceMapper maintenanceMapper;
+//
+//    @Transactional
+//    @Override
+//    public MaintenanceDto addMaintenance(MaintenanceDto maintenanceDto) {
+//        Maintenance maintenance = maintenanceMapper.dtoToEntity(maintenanceDto);
+//        maintenanceRepo.save(maintenance);
+//        return maintenanceMapper.entityToDto(maintenance);
+//    }
+
 }

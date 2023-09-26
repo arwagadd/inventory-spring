@@ -12,12 +12,12 @@ ALTER SEQUENCE public.item_history_id_sequence OWNER TO postgres;
 
 CREATE TABLE public.item_history
 (
-    id                bigint                 NOT NULL DEFAULT nextval('item_history_id_sequence'::regclass),
-    user_id            int,
-    item_id            int,
+    id                       bigint                 NOT NULL DEFAULT nextval('item_history_id_sequence'::regclass),
+    user_id                  bigint,
+    item_id                  bigint,
     start_time               timestamp,
-    end_time                timestamp,
-    CONSTRAINT user_id_fk FOREIGN KEY (user_id) REFERENCES public.user,
+    end_time                 timestamp,
+    CONSTRAINT user_id_fk   FOREIGN KEY (user_id) REFERENCES public.user,
     CONSTRAINT item_id_fk FOREIGN KEY (item_id) REFERENCES public.item,
     PRIMARY KEY (id)
 
@@ -25,3 +25,7 @@ CREATE TABLE public.item_history
 
 ALTER TABLE public.item_history
     OWNER TO postgres;
+
+
+
+

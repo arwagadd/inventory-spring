@@ -13,14 +13,14 @@ ALTER SEQUENCE public.item_id_sequence OWNER TO postgres;
 CREATE TABLE public.item
 (
     id                     bigint                 NOT NULL DEFAULT nextval('item_id_sequence'::regclass),
-    name              character varying(250),
-    asset_id           int,
-    price                character varying(250),
-    status              character varying(250),
-    serial_number      character varying(250),
-    average_rating     character varying(250),
-    quantity            int,
-    description         character varying(250),
+    name                   character varying(250),
+    asset_id               bigint,
+    price                  character varying(250),
+    status                 character varying(250),
+    serial_number          character varying(250),
+    average_rating         character varying(250),
+    quantity               bigint,
+    description            character varying(250),
     CONSTRAINT asset_id_fk FOREIGN KEY (asset_id) REFERENCES public.asset,
     PRIMARY KEY (id)
 
@@ -28,3 +28,6 @@ CREATE TABLE public.item
 
 ALTER TABLE public.item
     OWNER TO postgres;
+
+--changeset Arwa:20230920_item_table
+DELETE FROM public.item WHERE name = 'RAM';

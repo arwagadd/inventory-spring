@@ -6,8 +6,8 @@ import com.example.inventory.model.ItemUser;
 import java.util.List;
 
 public interface ItemUserService {
-    ItemUserDto giveItemToUser(ItemUserDto itemUserDto);
+    ItemUserDto assignItemToUser(ItemUserDto itemUserDto);
 //    List<ItemUserDto> getAllItemsOfUser(Long id);
-    void removeItemFromUser(Integer userId,Integer itemId);
-    List<ItemUserDto> getAllItemsOfUser(Integer userId);
+    void deassignItemFromUser(Long userId, Long itemId);
+    List<ItemUserDto> getAllItemsOfUser(Long userId);
 }

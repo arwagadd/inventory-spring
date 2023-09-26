@@ -12,9 +12,9 @@ ALTER SEQUENCE public.item_user_id_sequence OWNER TO postgres;
 
 CREATE TABLE public.item_user
 (
-    id                bigint                 NOT NULL DEFAULT nextval('item_user_id_sequence'::regclass),
-    user_id            int,
-    item_id            int,
+    id                 bigint                 NOT NULL DEFAULT nextval('item_user_id_sequence'::regclass),
+    user_id            bigint,
+    item_id            bigint,
     CONSTRAINT user_id_fk FOREIGN KEY (user_id) REFERENCES public.user,
     CONSTRAINT item_id_fk FOREIGN KEY (item_id) REFERENCES public.item,
     PRIMARY KEY (id)

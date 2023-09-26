@@ -1,10 +1,10 @@
 package com.example.inventory.service;
 
-
 import com.example.inventory.dto.ItemDto;
 import com.example.inventory.dto.ItemRequestDto;
 import com.example.inventory.dto.ItemUserDto;
 import com.example.inventory.dto.UserDto;
+import com.example.inventory.enums.ItemRequestType;
 import com.example.inventory.enums.ItemStatus;
 import com.example.inventory.enums.RequestStatus;
 import com.example.inventory.exceptions.ItemDoesNotExistException;
@@ -15,14 +15,8 @@ import com.example.inventory.mapper.ItemMapper;
 import com.example.inventory.mapper.ItemRequestMapper;
 import com.example.inventory.mapper.ItemUserMapper;
 import com.example.inventory.mapper.UserMapper;
-import com.example.inventory.model.Item;
-import com.example.inventory.model.ItemRequest;
-import com.example.inventory.model.ItemUser;
-import com.example.inventory.model.User;
-import com.example.inventory.repository.ItemRepo;
-import com.example.inventory.repository.ItemRequestRepo;
-import com.example.inventory.repository.ItemUserRepo;
-import com.example.inventory.repository.UserRepo;
+import com.example.inventory.model.*;
+import com.example.inventory.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,18 +30,19 @@ import java.util.stream.Collectors;
 @Data
 @AllArgsConstructor
 @Service
-public class ItemRequestServiceImpl implements ItemRequestService{
+public class ItemRequestServiceImpl implements ItemRequestService {
 
-    @Autowired
-    private ItemRequestRepo itemRequestRepo;
-    private ItemRequestMapper itemRequestMapper;
-    private ItemRepo itemRepo;
-    private UserRepo userRepo;
-    private UserMapper userMapper;
-    private ItemMapper itemMapper;
-    private ItemUserService itemUserService;
-    private ItemUserRepo itemUserRepo;
-    private ItemUserMapper itemUserMapper;
+    private final ItemRequestRepo itemRequestRepo;
+    private final ItemRequestMapper itemRequestMapper;
+    private final ItemRepo itemRepo;
+    private final UserRepo userRepo;
+    private final UserMapper userMapper;
+    private final ItemMapper itemMapper;
+    private final ItemUserService itemUserService;
+    private final ItemUserRepo itemUserRepo;
+    private final ItemUserMapper itemUserMapper;
+    private final MaintenanceRepo maintenanceRepo;
+    private final ItemUserHistoryService itemUserHistoryService;
 
     @Transactional
     public ItemRequestDto requestItem(ItemRequestDto itemRequestDto) {
@@ -56,57 +51,110 @@ public class ItemRequestServiceImpl implements ItemRequestService{
         ItemRequestDto requestDto = ItemRequestDto.getInstance(itemRequestDto);
         ItemRequest itemRequest = itemRequestMapper.dtoToEntity(requestDto);
         itemRequestRepo.save(itemRequest);
+        //add to report according to request type
+//        if (requestsReportRepo.findAll().isEmpty()) {
+//            RequestsReport requestsReport = new RequestsReport();
+//            requestsReportRepo.save(requestsReport);
+//            if (itemRequestDto.getItemRequestType().equals(ItemRequestType.Replacement)) {
+//                requestsReportRepo.findById(1L).get().setMaintenanceRequests(1L);
+//            } else if (itemRequestDto.getItemRequestType().equals(ItemRequestType.New)) {
+//                requestsReportRepo.findById(1L).get().setNewRequests(1L);
+//            } else {
+//                requestsReportRepo.findById(1L).get().setMaintenanceRequests(1L);
+//            }
+//            requestsReportRepo.save(requestsReport);
+//        } else {
+//            if (itemRequestDto.getItemRequestType().equals(ItemRequestType.Upgrade)) {
+//                requestsReportRepo.findById(1L).get().setMaintenanceRequests(requestsReportRepo.findById(1L).get().getMaintenanceRequests() + 1);
+//            }
+//            if (itemRequestDto.getItemRequestType().equals(ItemRequestType.Replacement)) {
+//                requestsReportRepo.findById(1L).get().setReplacementRequests(requestsReportRepo.findById(1L).get().getReplacementRequests() + 1);
+//            } else {
+//                if (itemRequestDto.getItemRequestType().equals(ItemRequestType.New)) {
+//                    requestsReportRepo.findById(1L).get().setNewRequests(requestsReportRepo.findById(1L).get().getNewRequests() + 1);
+//                }
+//            }
+//            requestsReportRepo.save(requestsReportRepo.findById(1L).get());
+//        }
         return requestDto;
     }
 
     @Override
-    public List<ItemRequestDto> viewPendingRequests() {
-        List<ItemRequest> itemRequest = itemRequestRepo.findItemRequestsByRequestStatus(RequestStatus.Pending);
+    public List<ItemRequestDto> viewRequests(RequestStatus requestStatus) {
+        List<ItemRequest> itemRequest = itemRequestRepo.findItemRequestsByRequestStatus(requestStatus);
         return itemRequest.stream().map(itemRequestMapper::entityToDto).collect(Collectors.toList());
     }
-    public List<ItemRequestDto> viewAcceptedRequests(){
-        List<ItemRequest> itemRequest =  itemRequestRepo.findItemRequestsByRequestStatus(RequestStatus.Accepted);
-        return itemRequest.stream().map(itemRequestMapper::entityToDto).collect(Collectors.toList());
-    }
-    public List<ItemRequestDto> viewRejectedRequests(){
-        List<ItemRequest> itemRequest =  itemRequestRepo.findItemRequestsByRequestStatus(RequestStatus.Rejected);
-        return itemRequest.stream().map(itemRequestMapper::entityToDto).collect(Collectors.toList());
-    }
+//    public List<ItemRequestDto> viewAcceptedRequests(){
+//        List<ItemRequest> itemRequest =  itemRequestRepo.findItemRequestsByRequestStatus(RequestStatus.Accepted);
+//        return itemRequest.stream().map(itemRequestMapper::entityToDto).collect(Collectors.toList());
+//    }
+//    public List<ItemRequestDto> viewRejectedRequests(){
+//        List<ItemRequest> itemRequest =  itemRequestRepo.findItemRequestsByRequestStatus(RequestStatus.Rejected);
+//        return itemRequest.stream().map(itemRequestMapper::entityToDto).collect(Collectors.toList());
+//    }
 
     @Override
-    public void rejectRequest(Integer itemRequestId) {
+    public void rejectRequest(Long itemRequestId) {
         Optional<ItemRequest> itemRequestExists = itemRequestRepo.findById(itemRequestId);
-        if(!itemRequestExists.isPresent()){
+        if (!itemRequestExists.isPresent()) {
             throw new RequestNotFoundException("Request not found");
-        }
-        else {
-            Integer requestId = itemRequestExists.get().getItemId();
+        } else {
+            Long requestId = itemRequestExists.get().getItemId();
             itemRequestRepo.findById(requestId);
             Optional<Item> item = itemRepo.findById(requestId);
-            if(itemRequestExists.get().getQuantity() >= item.get().getQuantity() || item.get().getItemStatus().equals(ItemStatus.UNAVAILABLE) || item.get().getQuantity() == 0){
+            if (itemRequestExists.get().getQuantity() >= item.get().getQuantity() || item.get().getItemStatus().equals(ItemStatus.UNAVAILABLE) || item.get().getQuantity() == 0) {
                 itemRequestExists.get().setRequestStatus(RequestStatus.Rejected);
             }
             itemRequestRepo.save(itemRequestExists.get());
         }
     }
+
     @Override
-    public void acceptRequest(Integer itemRequestId) {
+    public int countByItemRequestType(ItemRequestType type) {
+        System.out.println(itemRequestRepo.countByItemRequestType(ItemRequestType.New));
+        return 0;
+    }
+
+    @Override
+    @Transactional
+    public void acceptRequest(Long itemRequestId) {
         Optional<ItemRequest> itemRequestExists = itemRequestRepo.findById(itemRequestId);
-        if(!itemRequestExists.isPresent()){
+        if (!itemRequestExists.isPresent())
             throw new RequestNotFoundException("Request not found");
-        }
-        else {
-            Integer requestId = itemRequestExists.get().getItemId();
-            itemRequestRepo.findById(requestId);
-            Optional<Item> item = itemRepo.findById(requestId);
-            itemRequestExists.get().setRequestStatus(RequestStatus.Accepted);
-        }
+
+        Long requestId = itemRequestExists.get().getItemId();
+        itemRequestRepo.findById(requestId);
+        Optional<Item> item = itemRepo.findById(requestId);
+        itemRequestExists.get().setRequestStatus(RequestStatus.Accepted);
         itemRequestRepo.save(itemRequestExists.get());
+
+        Optional<Item> itemExists = itemRepo.findById(itemRequestExists.get().getItemId());
+        itemExists.get().setQuantity(itemExists.get().getQuantity() - itemRequestExists.get().getQuantity());
+        if (itemExists.get().getQuantity() < 0) {
+            throw new ItemQuantityNotAvailable("Item Quantity not Available");
+        }
+        if (itemExists.get().getItemStatus() == ItemStatus.UNAVAILABLE) {
+            throw new ItemDoesNotExistException("Item is not available");
+        }
+        if (itemExists.get().getQuantity() == 0) {
+            itemExists.get().setItemStatus(ItemStatus.UNAVAILABLE);
+        }
+        itemRepo.save(itemExists.get());
+
         ItemUser itemUser = new ItemUser();
         itemUser.setItem(itemRequestExists.get().getItem());
         itemUser.setUser(itemRequestExists.get().getUser());
         itemUserRepo.save(itemUser);
-        itemUserService.giveItemToUser(itemUserMapper.entityToDto(itemUser));
+        itemUserHistoryService.setHistoryForItem(itemUser);
+//        itemUserService.assignItemToUser(itemUserMapper.entityToDto(itemUser));
+
+        if (itemRequestRepo.findItemRequestTypeById(itemRequestId) == ItemRequestType.Upgrade) {
+            Maintenance maintenance = new Maintenance();
+            maintenance.setItem(itemRequestExists.get().getItem());
+            maintenance.setUpgradeItemId(itemRequestExists.get().getItemUpgradeId());
+            maintenanceRepo.save(maintenance);
+        }
+
     }
 
 //    @Override
@@ -131,7 +179,7 @@ public class ItemRequestServiceImpl implements ItemRequestService{
 //
 //    }
 
-    public UserDto checkIfUserExists(Integer id) {
+    public UserDto checkIfUserExists(Long id) {
         Optional<User> userExists = userRepo.findById(id);
         if (!userExists.isPresent()) {
             throw new UserDoesNotExistException("User does not exist.");
@@ -139,7 +187,7 @@ public class ItemRequestServiceImpl implements ItemRequestService{
         return userMapper.entityToDto(userExists.get());
     }
 
-    public ItemDto checkIfItemExists(Integer id) {
+    public ItemDto checkIfItemExists(Long id) {
         Optional<Item> itemExists = itemRepo.findById(id);
         if (!itemExists.isPresent()) {
             //(itemRepo.findByQuantity(id).equals(0)))

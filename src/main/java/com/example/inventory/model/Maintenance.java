@@ -24,25 +24,26 @@ public class Maintenance {
     )
     @Id
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
 
     @Column(name = "item_id", updatable = false , insertable = false)
-    private int itemId;
-
-    @Column(name = "action")
-    private String action;
-
-    @Column(name = "price")
-    private int price;
+    private Long itemId;
 
     @Column(name = "start_date")
-    private LocalDateTime startTime;
+    private LocalDateTime startTime = LocalDateTime.now();
 
     @Column(name = "end_date")
     private LocalDateTime endTime;
+
+    @Column(name = "upgrade_id")
+    private Long upgradeItemId;
+
+    //Main item -> laptop
+    //Used item -> RAM
+    //Change model name
 
 }

@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface ItemUserRepo extends JpaRepository<ItemUser,Long> {
-    void deleteByItemIdAndUserId(Integer itemId, Integer userId);
-    List<ItemUser> findAllByUserId(Integer userId);
+    void deleteByItemIdAndUserId(Long itemId, Long userId);
+    List<ItemUser> findAllByUserId(Long userId);
 }

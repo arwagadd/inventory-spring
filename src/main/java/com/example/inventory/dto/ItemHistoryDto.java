@@ -11,11 +11,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemHistoryDto {
-    private int id;
+    private Long id;
     private UserDto user;
     private int userId;
     private ItemDto item;
-    private int itemId;
+    private Long itemId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 }
